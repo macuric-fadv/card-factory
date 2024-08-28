@@ -1,0 +1,13 @@
+package com.marsus.demo.ccfactory;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class CCFactoryApplicationTest {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
