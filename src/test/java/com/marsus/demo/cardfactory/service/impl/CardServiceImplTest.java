@@ -1,12 +1,11 @@
 package com.marsus.demo.cardfactory.service.impl;
 
+import com.marsus.demo.cardfactory.exception.NotFoundException;
 import com.marsus.demo.cardfactory.model.Status;
-import com.marsus.demo.cardfactory.model.dto.ClientDto;
-import com.marsus.demo.cardfactory.model.dto.ClientInfoDto;
-import com.marsus.demo.cardfactory.model.dto.NewCardRequestDto;
-import com.marsus.demo.cardfactory.model.dto.RequestDto;
+import com.marsus.demo.cardfactory.model.dto.*;
 import com.marsus.demo.cardfactory.model.entity.CardRequest;
 import com.marsus.demo.cardfactory.model.entity.Client;
+import com.marsus.demo.cardfactory.repository.CardRequestRepository;
 import com.marsus.demo.cardfactory.repository.ClientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +29,9 @@ public class CardServiceImplTest {
 
     @Mock
     private ClientRepository clientRepository;
+
+    @Mock
+    private CardRequestRepository cardRequestRepository;
 
     @Test
     public void testCreateCardRequest_newClient() {
@@ -174,5 +176,109 @@ public class CardServiceImplTest {
 
         NewCardRequestDto newCardRequestDto = new NewCardRequestDto(null);
         assertThrows(IllegalArgumentException.class, () -> cardService.createCardRequest(newCardRequestDto));
+    }
+
+    @Test
+    public void testUpdateCardRequest() throws NotFoundException {
+
+        CardRequest cardRequest = CardRequest.builder()
+                .id(1L)
+                .status(Status.APPROVED)
+                .build();
+        List<CardRequest> cardRequests = new ArrayList<>();
+        cardRequests.add(cardRequest);
+        Client client = Client.builder()
+                .id(1L)
+                .firstName("Jure")
+                .lastName("Radić")
+                .oib("14131362243")
+                .cardRequests(cardRequests)
+                .build();
+        cardRequest.setClient(client);
+        when(clientRepository.findById(anyLong())).thenReturn(Optional.of(client));
+
+        RequestDto requestDto = RequestDto.builder()
+                .id(1L)
+                .status(Status.PENDING)
+                .build();
+        CardRequestDto cardRequestDto = CardRequestDto.builder()
+                .clientId(1L)
+                .request(requestDto)
+                .build();
+        ClientInfoDto clientInfo = cardService.updateCardRequest(cardRequestDto);
+        assertNotNull(clientInfo);
+        assertNotNull(clientInfo.getClient());
+        assertEquals(cardRequestDto.getClientId(), clientInfo.getClient().getId());
+        assertNotNull(clientInfo.getRequests());
+        assertEquals(1, clientInfo.getRequests().size());
+        RequestDto request = clientInfo.getRequests().get(0);
+        assertNotNull(request);
+        assertEquals(requestDto.getId(), request.getId());
+        assertEquals(requestDto.getStatus(), request.getStatus());
+    }
+
+    @Test
+    public void testUpdateCardRequest_cardRequestDtoNull() {
+
+        assertThrows(IllegalArgumentException.class, () -> cardService.updateCardRequest(null));
+    }
+
+    @Test
+    public void testUpdateCardRequest_clientIdNull() {
+
+        CardRequestDto cardRequestDto = new CardRequestDto(null, null);
+        assertThrows(IllegalArgumentException.class, () -> cardService.updateCardRequest(null));
+    }
+
+    @Test
+    public void testUpdateCardRequest_requestNull() {
+
+        CardRequestDto cardRequestDto = new CardRequestDto(1L, null);
+        assertThrows(IllegalArgumentException.class, () -> cardService.updateCardRequest(null));
+    }
+
+    @Test
+    public void testUpdateCardRequest_requestIdNull() {
+
+        RequestDto requestDto = new RequestDto(null, null);
+        CardRequestDto cardRequestDto = new CardRequestDto(1L, requestDto);
+        assertThrows(IllegalArgumentException.class, () -> cardService.updateCardRequest(null));
+    }
+
+    @Test
+    public void testUpdateCardRequest_clientNotFound() {
+
+        RequestDto requestDto = RequestDto.builder()
+                .id(1L)
+                .status(Status.PENDING)
+                .build();
+        CardRequestDto cardRequestDto = CardRequestDto.builder()
+                .clientId(1L)
+                .request(requestDto)
+                .build();
+        assertThrows(NotFoundException.class, () -> cardService.updateCardRequest(cardRequestDto));
+
+    }
+
+    @Test
+    public void testUpdateCardRequest_requestNotFound() {
+
+        Client client = Client.builder()
+                .id(1L)
+                .firstName("Jure")
+                .lastName("Radić")
+                .oib("14131362243")
+                .build();
+        when(clientRepository.findById(anyLong())).thenReturn(Optional.of(client));
+
+        RequestDto requestDto = RequestDto.builder()
+                .id(1L)
+                .status(Status.PENDING)
+                .build();
+        CardRequestDto cardRequestDto = CardRequestDto.builder()
+                .clientId(1L)
+                .request(requestDto)
+                .build();
+        assertThrows(NotFoundException.class, () -> cardService.updateCardRequest(cardRequestDto));
     }
 }

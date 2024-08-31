@@ -11,7 +11,7 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class CardRequestDto {
 
-    private String clientOib;
+    private Long clientId;
 
     private RequestDto request;
 }

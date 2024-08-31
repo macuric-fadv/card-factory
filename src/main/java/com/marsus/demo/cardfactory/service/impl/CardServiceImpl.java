@@ -1,11 +1,13 @@
 package com.marsus.demo.cardfactory.service.impl;
 
+import com.marsus.demo.cardfactory.exception.NotFoundException;
 import com.marsus.demo.cardfactory.model.dto.CardRequestDto;
 import com.marsus.demo.cardfactory.model.dto.ClientInfoDto;
 import com.marsus.demo.cardfactory.model.dto.NewCardRequestDto;
 import com.marsus.demo.cardfactory.model.entity.CardRequest;
 import com.marsus.demo.cardfactory.model.entity.Client;
 import com.marsus.demo.cardfactory.model.Status;
+import com.marsus.demo.cardfactory.repository.CardRequestRepository;
 import com.marsus.demo.cardfactory.repository.ClientRepository;
 import com.marsus.demo.cardfactory.service.CardService;
 import org.slf4j.Logger;
@@ -23,8 +25,11 @@ public class CardServiceImpl implements CardService {
 
     private final ClientRepository clientRepository;
 
-    public CardServiceImpl(ClientRepository clientRepository) {
+    private final CardRequestRepository cardRequestRepository;
+
+    public CardServiceImpl(final ClientRepository clientRepository, final CardRequestRepository cardRequestRepository) {
         this.clientRepository = clientRepository;
+        this.cardRequestRepository = cardRequestRepository;
     }
 
     @Override
@@ -48,8 +53,43 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public void updateCardRequest(final CardRequestDto cardRequest) {
+    public ClientInfoDto updateCardRequest(final CardRequestDto cardRequestDto) throws NotFoundException {
 
+        if (cardRequestDto == null) {
+            throw new IllegalArgumentException("Card request not provided");
+        }
+        if (cardRequestDto.getClientId() == null) {
+            throw new IllegalArgumentException("Card request client ID not provided");
+        }
+        if (cardRequestDto.getRequest() == null || cardRequestDto.getRequest().getId() == null) {
+            throw new IllegalArgumentException("Card request ID not provided");
+        }
+
+        log.info("updateCardRequest: updating card request for client, client ID: {}, request ID: {}",
+                cardRequestDto.getClientId(), cardRequestDto.getRequest().getId());
+
+        Optional<Client> clientOptional = clientRepository.findById(cardRequestDto.getClientId());
+        if (clientOptional.isEmpty()) {
+            throw new NotFoundException("Client not found for ID " + cardRequestDto.getClientId());
+        }
+        Client client = clientOptional.get();
+        log.debug("updateCardRequest: client found for ID: {}", client.getId());
+
+        Optional<CardRequest> requestOptional = client.getCardRequests().stream()
+                .filter(cardRequest -> cardRequest.getId().equals(cardRequestDto.getRequest().getId())).findAny();
+        if (requestOptional.isEmpty()) {
+            throw new NotFoundException("Client request not found for ID " + cardRequestDto.getRequest().getId());
+        }
+        CardRequest cardRequest = requestOptional.get();
+        log.debug("updateCardRequest: card request found for ID: {}", cardRequestDto.getRequest().getId());
+
+        cardRequest.setStatus(cardRequestDto.getRequest().getStatus());
+        cardRequestRepository.save(cardRequest);
+
+        log.info("updateCardRequest: card request updated, client ID: {}, request ID: {}",
+                client.getId(), cardRequest.getId());
+
+        return mapToClientInfoDto(client);
     }
 
     @Override
