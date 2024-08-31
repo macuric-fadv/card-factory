@@ -1,4 +1,4 @@
-package com.marsus.demo.cardfactory.model;
+package com.marsus.demo.cardfactory.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;

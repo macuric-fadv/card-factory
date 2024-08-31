@@ -1,6 +1,6 @@
 package com.marsus.demo.cardfactory.repository;
 
-import com.marsus.demo.cardfactory.model.Client;
+import com.marsus.demo.cardfactory.model.entity.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

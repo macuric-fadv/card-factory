@@ -1,5 +1,6 @@
-package com.marsus.demo.cardfactory.model;
+package com.marsus.demo.cardfactory.model.entity;
 
+import com.marsus.demo.cardfactory.model.Status;
 import jakarta.persistence.*;
 import lombok.*;
 

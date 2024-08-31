@@ -1,4 +1,4 @@
-package com.marsus.demo.cardfactory.dto;
+package com.marsus.demo.cardfactory.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
-package com.marsus.demo.cardfactory.mapper;
+package com.marsus.demo.cardfactory.model.mapper;
 
-import com.marsus.demo.cardfactory.dto.NewCardRequestDto;
-import com.marsus.demo.cardfactory.model.Client;
+import com.marsus.demo.cardfactory.model.dto.NewCardRequestDto;
+import com.marsus.demo.cardfactory.model.entity.Client;
 
 public class ClientMapper {
 
