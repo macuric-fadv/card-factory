@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @Getter
 @Entity
-@Table(name = "CLIENTS", indexes = @Index(name = "idx_oib", columnList = "oib"))
+@Table(name = "CLIENT", indexes = @Index(name = "idx_oib", columnList = "oib"))
 public class Client extends BaseEntity {
 
     @Pattern(regexp = "^[a-zA-Z]{3,50}$")
