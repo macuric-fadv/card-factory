@@ -5,17 +5,17 @@ package com.marsus.demo.ccfactory.model;
  */
 public enum Status {
 
-    /** New request for a credit card */
+    /** New request for a credit card, awaiting approval */
     NEW,
 
-    /** Credit card request has been started processing, awaiting approval */
-    PENDING,
-
-    /** Credit card request has been approved, new credit card is being created */
+    /** Credit card request has been approved, new credit is going to be created */
     APPROVED,
 
     /** Credit card request has been rejected, credit card won't be created */
     REJECTED,
+
+    /** Credit card creation is in progress  */
+    PENDING,
 
     /** Credit card request has been fulfilled, new credit card is ready, awaiting a client to pick it up */
     READY,
