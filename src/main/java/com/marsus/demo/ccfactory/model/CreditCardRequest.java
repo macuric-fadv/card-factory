@@ -21,8 +21,6 @@ public class CreditCardRequest extends BaseEntity {
         this.status = Status.NEW;
     }
 
-    private LocalDateTime requestedDate;
-
     private LocalDateTime completedDate;
 
     @Enumerated(EnumType.STRING)
