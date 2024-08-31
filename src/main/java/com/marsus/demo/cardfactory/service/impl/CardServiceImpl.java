@@ -27,9 +27,8 @@ public class CardServiceImpl implements CardService {
         this.clientRepository = clientRepository;
     }
 
-
     @Override
-    public void createCardRequest(final NewCardRequestDto newCardRequest) {
+    public ClientInfoDto createCardRequest(final NewCardRequestDto newCardRequest) {
 
         if (newCardRequest == null || newCardRequest.getClient() == null) {
             throw new IllegalArgumentException("New card request client data not provided");
@@ -44,7 +43,8 @@ public class CardServiceImpl implements CardService {
                 .build();
         client.addCardRequest(cardRequest);
         clientRepository.save(client);
-        log.info("createCardRequest: new card request created, client OID: {}", client.getOib());
+        log.info("createCardRequest: new card request created, client OIB: {}", client.getOib());
+        return mapToClientInfoDto(client);
     }
 
     @Override

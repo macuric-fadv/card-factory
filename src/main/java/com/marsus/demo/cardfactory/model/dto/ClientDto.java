@@ -11,6 +11,8 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class ClientDto {
 
+    private Long id;
+
     private String firstName;
 
     private String lastName;

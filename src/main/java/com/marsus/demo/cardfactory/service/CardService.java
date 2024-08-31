@@ -6,7 +6,7 @@ import com.marsus.demo.cardfactory.model.dto.NewCardRequestDto;
 
 public interface CardService {
 
-    void createCardRequest(NewCardRequestDto newCardRequest);
+    ClientInfoDto createCardRequest(NewCardRequestDto newCardRequest);
 
     void updateCardRequest(CardRequestDto cardRequest);
 

@@ -12,7 +12,7 @@ import lombok.Getter;
 @EqualsAndHashCode
 public class RequestDto {
 
-    private Long requestId;
+    private Long id;
 
-    private Status requestStatus;
+    private Status status;
 }
