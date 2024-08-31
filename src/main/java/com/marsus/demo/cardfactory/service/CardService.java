@@ -11,7 +11,7 @@ public interface CardService {
 
     ClientInfoDto updateCardRequest(CardRequestDto cardRequest) throws NotFoundException;
 
-    ClientInfoDto getClientInfo(String oib);
+    ClientInfoDto getClientInfo(String oib) throws NotFoundException;
 
     void deleteClient(String oib);
 }

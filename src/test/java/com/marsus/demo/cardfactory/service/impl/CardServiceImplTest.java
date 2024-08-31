@@ -281,4 +281,63 @@ public class CardServiceImplTest {
                 .build();
         assertThrows(NotFoundException.class, () -> cardService.updateCardRequest(cardRequestDto));
     }
+
+    @Test
+    public void testGetClientInfo() throws NotFoundException {
+
+        final String oib = "14131362243";
+        CardRequest cardRequest = CardRequest.builder()
+                .id(1L)
+                .status(Status.APPROVED)
+                .build();
+        List<CardRequest> cardRequests = new ArrayList<>();
+        cardRequests.add(cardRequest);
+        Client client = Client.builder()
+                .id(1L)
+                .firstName("Jure")
+                .lastName("Radić")
+                .oib(oib)
+                .cardRequests(cardRequests)
+                .build();
+        cardRequest.setClient(client);
+        when(clientRepository.findByOib(anyString())).thenReturn(Optional.of(client));
+
+        ClientInfoDto clientInfo = cardService.getClientInfo(oib);
+        assertNotNull(clientInfo);
+        assertNotNull(clientInfo.getClient());
+        assertEquals(client.getId(), clientInfo.getClient().getId());
+        assertEquals(client.getFirstName(), clientInfo.getClient().getFirstName());
+        assertEquals(client.getLastName(), clientInfo.getClient().getLastName());
+        assertEquals(oib, clientInfo.getClient().getOib());
+        assertNotNull(clientInfo.getRequests());
+        assertEquals(1, clientInfo.getRequests().size());
+        RequestDto request = clientInfo.getRequests().get(0);
+        assertNotNull(request);
+        assertEquals(cardRequest.getId(), request.getId());
+        assertEquals(cardRequest.getStatus(), request.getStatus());
+    }
+
+    @Test
+    public void testGetClientInfo_oibNull() {
+
+        assertThrows(IllegalArgumentException.class, () -> cardService.getClientInfo(null));
+    }
+
+    @Test
+    public void testGetClientInfo_clientNotFound() {
+
+        assertThrows(NotFoundException.class, () -> cardService.getClientInfo("14131362243"));
+    }
+
+    @Test
+    public void testDeleteClient() {
+
+        cardService.deleteClient("14131362243");
+    }
+
+    @Test
+    public void testDeleteClient_nullOib() {
+
+        assertThrows(IllegalArgumentException.class, () -> cardService.deleteClient(null));
+    }
 }

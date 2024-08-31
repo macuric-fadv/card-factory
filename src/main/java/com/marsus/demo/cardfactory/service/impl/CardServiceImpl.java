@@ -93,12 +93,35 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public ClientInfoDto getClientInfo(final String oib) {
-        return null;
+    public ClientInfoDto getClientInfo(final String oib) throws NotFoundException {
+
+        if (oib == null) {
+            throw new IllegalArgumentException("OIB not provided");
+        }
+
+        log.info("getClientInfo: retrieving client by OIB: {}", oib);
+
+        Optional<Client> clientOptional = clientRepository.findByOib(oib);
+        if (clientOptional.isEmpty()) {
+            throw new NotFoundException("Client not found by OIB: " + oib);
+        }
+
+        Client client = clientOptional.get();
+        log.info("getClientInfo: client found for OIB: {}, client ID: {}", client.getOib(), client.getId());
+        return mapToClientInfoDto(client);
     }
 
     @Override
     public void deleteClient(final String oib) {
 
+        if (oib == null) {
+            throw new IllegalArgumentException("OIB not provided");
+        }
+
+        log.info("deleteClient: deleting client for OIB: {}", oib);
+
+        clientRepository.deleteByOib(oib);
+
+        log.info("deleteClient: client deleted for OIB: {}", oib);
     }
 }
