@@ -3,6 +3,7 @@ package com.marsus.demo.cardfactory.model.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Builder
+@SuperBuilder
 @Getter
 @Entity
 @Table(name = "CLIENT", indexes = @Index(name = "idx_oib", columnList = "oib"))

@@ -3,6 +3,7 @@ package com.marsus.demo.cardfactory.model.entity;
 import com.marsus.demo.cardfactory.model.Status;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 
@@ -12,8 +13,9 @@ import java.time.LocalDateTime;
  * Credit card request belongs to a single {@linkplain Client}.
  */
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 @Entity
 public class CardRequest extends BaseEntity {
