@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.marsus.demo</groupId>
-	<artifactId>cc-factory</artifactId>
+	<artifactId>card-factory</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CC Factory Demo Application</name>
+	<name>Card Factory Demo Application</name>
 	<description>Demo project for credit card creation</description>
 
 	<properties>

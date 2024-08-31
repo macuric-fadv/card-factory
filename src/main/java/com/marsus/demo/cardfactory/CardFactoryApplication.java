@@ -1,13 +1,13 @@
-package com.marsus.demo.ccfactory;
+package com.marsus.demo.cardfactory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CCFactoryApplication {
+public class CardFactoryApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CCFactoryApplication.class, args);
+		SpringApplication.run(CardFactoryApplication.class, args);
 	}
 
 }

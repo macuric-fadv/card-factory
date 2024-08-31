@@ -1,4 +1,4 @@
-package com.marsus.demo.ccfactory.model;
+package com.marsus.demo.cardfactory.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

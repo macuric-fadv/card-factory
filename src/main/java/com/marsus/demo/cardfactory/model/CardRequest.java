@@ -1,4 +1,4 @@
-package com.marsus.demo.ccfactory.model;
+package com.marsus.demo.cardfactory.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @Entity
-public class CreditCardRequest extends BaseEntity {
+public class CardRequest extends BaseEntity {
 
-    public CreditCardRequest() {
+    public CardRequest() {
         this.status = Status.NEW;
     }
 

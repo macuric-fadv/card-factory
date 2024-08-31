@@ -1,14 +1,15 @@
-package com.marsus.demo.ccfactory.model;
+package com.marsus.demo.cardfactory.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A client entity, applying for a new credit card. Client is identified by its ID, has personal data
- * like first name, last name, and OIB. A client can have one or more {@linkplain CreditCardRequest}s.
+ * like first name, last name, and OIB. A client can have one or more {@linkplain CardRequest}s.
  */
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,5 +30,16 @@ public class Client extends BaseEntity {
     private String oib;
 
     @OneToMany(mappedBy = "client")
-    private List<CreditCardRequest> creditCardRequests;
+    private List<CardRequest> cardRequests;
+
+    public List<CardRequest> getCardRequests() {
+        if (cardRequests == null) {
+            cardRequests = new ArrayList<>();
+        }
+        return cardRequests;
+    }
+
+    public void addCardRequest(final CardRequest cardRequest) {
+        getCardRequests().add(cardRequest);
+    }
 }

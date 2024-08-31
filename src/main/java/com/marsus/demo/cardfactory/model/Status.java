@@ -1,4 +1,4 @@
-package com.marsus.demo.ccfactory.model;
+package com.marsus.demo.cardfactory.model;
 
 /**
  * All possible statuses of a request for new credit card
