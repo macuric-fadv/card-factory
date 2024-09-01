@@ -1,20 +1,21 @@
-package com.marsus.demo.cardfactory.rest.model;
+package com.marsus.demo.cardfactory.model;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 /**
- * A class representing request for a new card
+ * A class representing request for a new card.
  */
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 @EqualsAndHashCode
 public class NewCardRequest {
+
+    /** Client ID */
+    private Long clientId;
 
     /** Client first name */
     @NotNull

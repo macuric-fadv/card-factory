@@ -1,4 +1,4 @@
-package com.marsus.demo.cardfactory.model.entity;
+package com.marsus.demo.cardfactory.dao.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

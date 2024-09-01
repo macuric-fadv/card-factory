@@ -2,10 +2,7 @@ package com.marsus.demo.cardfactory.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marsus.demo.cardfactory.exception.NotFoundException;
-import com.marsus.demo.cardfactory.model.Status;
-import com.marsus.demo.cardfactory.model.dto.*;
-import com.marsus.demo.cardfactory.rest.model.NewCardRequest;
-import com.marsus.demo.cardfactory.rest.model.UpdateCardRequest;
+import com.marsus.demo.cardfactory.model.*;
 import com.marsus.demo.cardfactory.service.CardService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,21 +35,18 @@ public class CardControllerTest {
     @Test
     public void testPostNewCardRequest() throws Exception {
 
-        ClientDto clientDto = ClientDto.builder()
-                .id(1L)
+        CardRequest request = CardRequest.builder()
+                .requestId(1L)
+                .status(Status.NEW)
+                .build();
+        ClientInfo clientInfo = ClientInfo.builder()
+                .clientId(1L)
                 .firstName("Mario")
                 .lastName("Juras")
                 .oib("14131362243")
+                .requests(List.of(request))
                 .build();
-        RequestDto requestDto = RequestDto.builder()
-                .id(1L)
-                .status(Status.NEW)
-                .build();
-        ClientInfoDto clientInfoDto = ClientInfoDto.builder()
-                .client(clientDto)
-                .requests(List.of(requestDto))
-                .build();
-        when(cardService.createCardRequest(ArgumentMatchers.any(NewCardRequestDto.class))).thenReturn(clientInfoDto);
+        when(cardService.createCardRequest(ArgumentMatchers.any(NewCardRequest.class))).thenReturn(clientInfo);
 
         NewCardRequest newCardRequest = NewCardRequest.builder()
                 .firstName("Mario")
@@ -66,29 +60,26 @@ public class CardControllerTest {
                         .content(new ObjectMapper().writeValueAsString(newCardRequest))
                 ).andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
-                .andExpect(header().string("Location", containsString(String.valueOf(clientDto.getId()))));
+                .andExpect(header().string("Location", containsString(String.valueOf(clientInfo.getClientId()))));
 
-        verify(cardService, times(1)).createCardRequest(ArgumentMatchers.any(NewCardRequestDto.class));
+        verify(cardService, times(1)).createCardRequest(ArgumentMatchers.any(NewCardRequest.class));
     }
 
     @Test
     public void testPostNewCardRequest_noBody() throws Exception {
 
-        ClientDto clientDto = ClientDto.builder()
-                .id(1L)
+        CardRequest request = CardRequest.builder()
+                .requestId(1L)
+                .status(Status.NEW)
+                .build();
+        ClientInfo clientInfo = ClientInfo.builder()
+                .clientId(1L)
                 .firstName("Mario")
                 .lastName("Šimić")
                 .oib("14131362243")
+                .requests(List.of(request))
                 .build();
-        RequestDto requestDto = RequestDto.builder()
-                .id(1L)
-                .status(Status.NEW)
-                .build();
-        ClientInfoDto clientInfoDto = ClientInfoDto.builder()
-                .client(clientDto)
-                .requests(List.of(requestDto))
-                .build();
-        when(cardService.createCardRequest(ArgumentMatchers.any(NewCardRequestDto.class))).thenReturn(clientInfoDto);
+        when(cardService.createCardRequest(ArgumentMatchers.any(NewCardRequest.class))).thenReturn(clientInfo);
 
         mockMvc.perform(post("/api/v1/card-request")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -101,27 +92,24 @@ public class CardControllerTest {
     @Test
     public void testUpdateCardRequest() throws Exception {
 
-        ClientDto clientDto = ClientDto.builder()
-                .id(1L)
+        CardRequest request = CardRequest.builder()
+                .requestId(1L)
+                .status(Status.PENDING)
+                .build();
+        ClientInfo clientInfo = ClientInfo.builder()
+                .clientId(1L)
                 .firstName("Mario")
                 .lastName("Šimić")
                 .oib("14131362243")
+                .requests(List.of(request))
                 .build();
-        RequestDto requestDto = RequestDto.builder()
-                .id(1L)
-                .status(Status.PENDING)
-                .build();
-        ClientInfoDto clientInfoDto = ClientInfoDto.builder()
-                .client(clientDto)
-                .requests(List.of(requestDto))
-                .build();
-        when(cardService.updateCardRequest(ArgumentMatchers.any(CardRequestDto.class))).thenReturn(clientInfoDto);
+        when(cardService.updateCardRequest(ArgumentMatchers.any(UpdateCardRequest.class))).thenReturn(clientInfo);
 
-        UpdateCardRequest updateCardRequest = UpdateCardRequest.builder()
+        com.marsus.demo.cardfactory.rest.model.UpdateCardRequest updateCardRequest = com.marsus.demo.cardfactory.rest.model.UpdateCardRequest.builder()
                 .status("PENDING")
                 .build();
         mockMvc.perform(put("/api/v1/card-request/{clientId}/request/{requestId}",
-                        clientDto.getId(), requestDto.getId())
+                        clientInfo.getClientId(), request.getRequestId())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE)
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -136,13 +124,13 @@ public class CardControllerTest {
                 .andExpect(jsonPath("$.requests[0].id").value(1L))
                 .andExpect(jsonPath("$.requests[0].status").value("PENDING"));
 
-        verify(cardService, times(1)).updateCardRequest(ArgumentMatchers.any(CardRequestDto.class));
+        verify(cardService, times(1)).updateCardRequest(ArgumentMatchers.any(UpdateCardRequest.class));
     }
 
     @Test
     public void testUpdateCardRequest_nullClientId() throws Exception {
 
-        UpdateCardRequest updateCardRequest = UpdateCardRequest.builder()
+        com.marsus.demo.cardfactory.rest.model.UpdateCardRequest updateCardRequest = com.marsus.demo.cardfactory.rest.model.UpdateCardRequest.builder()
                 .status("PENDING")
                 .build();
         mockMvc.perform(put("/api/v1/card-request/{clientId}/request/{requestId}",
@@ -157,7 +145,7 @@ public class CardControllerTest {
     @Test
     public void testUpdateCardRequest_nullRequestId() throws Exception {
 
-        UpdateCardRequest updateCardRequest = UpdateCardRequest.builder()
+        com.marsus.demo.cardfactory.rest.model.UpdateCardRequest updateCardRequest = com.marsus.demo.cardfactory.rest.model.UpdateCardRequest.builder()
                 .status("PENDING")
                 .build();
         mockMvc.perform(put("/api/v1/card-request/{clientId}/request/{requestId}",
@@ -184,10 +172,10 @@ public class CardControllerTest {
     @Test
     public void testUpdateCardRequest_clientNotFound() throws Exception {
 
-        when(cardService.updateCardRequest(ArgumentMatchers.any(CardRequestDto.class)))
+        when(cardService.updateCardRequest(ArgumentMatchers.any(UpdateCardRequest.class)))
                 .thenThrow(new NotFoundException("Client not found"));
 
-        UpdateCardRequest updateCardRequest = UpdateCardRequest.builder()
+        com.marsus.demo.cardfactory.rest.model.UpdateCardRequest updateCardRequest = com.marsus.demo.cardfactory.rest.model.UpdateCardRequest.builder()
                 .status("PENDING")
                 .build();
         mockMvc.perform(put("/api/v1/card-request/{clientId}/request/{requestId}", 1L, 1L)
@@ -197,28 +185,25 @@ public class CardControllerTest {
                         .content(new ObjectMapper().writeValueAsString(updateCardRequest))
                 ).andExpect(status().isNotFound());
 
-        verify(cardService, times(1)).updateCardRequest(ArgumentMatchers.any(CardRequestDto.class));
+        verify(cardService, times(1)).updateCardRequest(ArgumentMatchers.any(UpdateCardRequest.class));
     }
 
     @Test
     public void testGetClientInfo() throws Exception {
 
         final String oib = "14131362243";
-        ClientDto clientDto = ClientDto.builder()
-                .id(1L)
+        CardRequest request = CardRequest.builder()
+                .requestId(1L)
+                .status(Status.PENDING)
+                .build();
+        ClientInfo clientInfo = ClientInfo.builder()
+                .clientId(1L)
                 .firstName("Mario")
                 .lastName("Šimić")
                 .oib(oib)
+                .requests(List.of(request))
                 .build();
-        RequestDto requestDto = RequestDto.builder()
-                .id(1L)
-                .status(Status.PENDING)
-                .build();
-        ClientInfoDto clientInfoDto = ClientInfoDto.builder()
-                .client(clientDto)
-                .requests(List.of(requestDto))
-                .build();
-        when(cardService.getClientInfo(ArgumentMatchers.anyString())).thenReturn(clientInfoDto);
+        when(cardService.getClientInfo(ArgumentMatchers.anyString())).thenReturn(clientInfo);
 
         mockMvc.perform(get("/api/v1/card-request")
                         .param("oib", oib)
@@ -241,21 +226,18 @@ public class CardControllerTest {
     public void testGetClientInfo_emptyOib() throws Exception {
 
         final String oib = "14131362243";
-        ClientDto clientDto = ClientDto.builder()
-                .id(1L)
+        CardRequest request = CardRequest.builder()
+                .requestId(1L)
+                .status(Status.PENDING)
+                .build();
+        ClientInfo clientInfo = ClientInfo.builder()
+                .clientId(1L)
                 .firstName("Mario")
                 .lastName("Šimić")
                 .oib(oib)
+                .requests(List.of(request))
                 .build();
-        RequestDto requestDto = RequestDto.builder()
-                .id(1L)
-                .status(Status.PENDING)
-                .build();
-        ClientInfoDto clientInfoDto = ClientInfoDto.builder()
-                .client(clientDto)
-                .requests(List.of(requestDto))
-                .build();
-        when(cardService.getClientInfo(ArgumentMatchers.anyString())).thenReturn(clientInfoDto);
+        when(cardService.getClientInfo(ArgumentMatchers.anyString())).thenReturn(clientInfo);
 
         mockMvc.perform(get("/api/v1/card-request")
                         .param("oib", "")
@@ -268,21 +250,18 @@ public class CardControllerTest {
     public void testGetClientInfo_invalidOib() throws Exception {
 
         final String oib = "14131362243";
-        ClientDto clientDto = ClientDto.builder()
-                .id(1L)
+        CardRequest request = CardRequest.builder()
+                .requestId(1L)
+                .status(Status.PENDING)
+                .build();
+        ClientInfo clientInfo = ClientInfo.builder()
+                .clientId(1L)
                 .firstName("Mario")
                 .lastName("Šimić")
                 .oib(oib)
+                .requests(List.of(request))
                 .build();
-        RequestDto requestDto = RequestDto.builder()
-                .id(1L)
-                .status(Status.PENDING)
-                .build();
-        ClientInfoDto clientInfoDto = ClientInfoDto.builder()
-                .client(clientDto)
-                .requests(List.of(requestDto))
-                .build();
-        when(cardService.getClientInfo(ArgumentMatchers.anyString())).thenReturn(clientInfoDto);
+        when(cardService.getClientInfo(ArgumentMatchers.anyString())).thenReturn(clientInfo);
 
         mockMvc.perform(get("/api/v1/card-request")
                 .param("oib", "111")

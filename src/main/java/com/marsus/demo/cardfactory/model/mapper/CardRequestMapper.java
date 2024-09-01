@@ -1,59 +1,53 @@
 package com.marsus.demo.cardfactory.model.mapper;
 
-import com.marsus.demo.cardfactory.model.Status;
-import com.marsus.demo.cardfactory.model.dto.CardRequestDto;
-import com.marsus.demo.cardfactory.model.dto.ClientDto;
-import com.marsus.demo.cardfactory.model.dto.NewCardRequestDto;
-import com.marsus.demo.cardfactory.model.dto.RequestDto;
-import com.marsus.demo.cardfactory.model.entity.CardRequest;
-import com.marsus.demo.cardfactory.rest.model.NewCardRequest;
-import com.marsus.demo.cardfactory.rest.model.UpdateCardRequest;
+import com.marsus.demo.cardfactory.model.*;
+import com.marsus.demo.cardfactory.dao.entity.CardRequestEntity;
 
-import java.util.UUID;
-
+/**
+ * A card request mapper class handling transitions from one form of card request model class to another.
+ */
 public class CardRequestMapper {
 
-    public static RequestDto mapToRequestDto(CardRequest cardRequest) {
+    /**
+     * Map given {@linkplain CardRequestEntity} to {@linkplain CardRequest}.
+     *
+     * @param cardRequestEntity {@linkplain CardRequestEntity} to map
+     * @return {@linkplain CardRequest} object mapped from the given {@linkplain CardRequestEntity}
+     */
+    public static CardRequest mapToCardRequest(CardRequestEntity cardRequestEntity) {
 
-        if (cardRequest == null) {
+        if (cardRequestEntity == null) {
             return null;
         }
 
-        return RequestDto.builder()
-                .id(cardRequest.getId())
-                .status(cardRequest.getStatus())
+        return CardRequest.builder()
+                .requestId(cardRequestEntity.getId())
+                .status(cardRequestEntity.getStatus())
                 .build();
     }
 
-    public static NewCardRequestDto mapToNewCardRequestDto(NewCardRequest newCardRequest) {
-
-        if (newCardRequest == null) {
-            return null;
-        }
-
-        ClientDto clientDto = ClientDto.builder()
-                .firstName(newCardRequest.getFirstName())
-                .lastName(newCardRequest.getLastName())
-                .oib(newCardRequest.getOib())
-                .build();
-        return NewCardRequestDto.builder()
-                .client(clientDto)
-                .build();
-    }
-
-    public static CardRequestDto mapToCardRequestDto(Long clientId, Long requestId, UpdateCardRequest updateCardRequest) {
+    /**
+     * Map given data to {@linkplain UpdateCardRequest}.
+     *
+     * @param clientId Client ID
+     * @param requestId Card request ID
+     * @param updateCardRequest {@linkplain com.marsus.demo.cardfactory.rest.model.UpdateCardRequest} to map
+     * @return {@linkplain UpdateCardRequest} object mapped from the given data
+     */
+    public static UpdateCardRequest mapToUpdateCardRequest(Long clientId, Long requestId,
+            com.marsus.demo.cardfactory.rest.model.UpdateCardRequest updateCardRequest) {
 
         if (clientId == null || requestId == null || updateCardRequest == null) {
             return null;
         }
 
-        RequestDto requestDto = RequestDto.builder()
-                .id(requestId)
+        CardRequest cardRequest = CardRequest.builder()
+                .requestId(requestId)
                 .status(Status.valueOf(updateCardRequest.getStatus()))
                 .build();
-        return CardRequestDto.builder()
+        return UpdateCardRequest.builder()
                 .clientId(clientId)
-                .request(requestDto)
+                .request(cardRequest)
                 .build();
     }
 }

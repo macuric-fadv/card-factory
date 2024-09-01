@@ -1,4 +1,4 @@
-package com.marsus.demo.cardfactory.model.entity;
+package com.marsus.demo.cardfactory.dao.entity;
 
 import com.marsus.demo.cardfactory.model.Status;
 import jakarta.persistence.*;
@@ -8,9 +8,9 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
 /**
- * Defines a request for a new credit card. Request is identified by its ID.
+ * An entity class representing a new card request data. Request is identified by its ID.
  * {@linkplain Status} denotes a stage the process of creating new credit card is at.
- * Credit card request belongs to a single {@linkplain Client}.
+ * Credit card request belongs to a single {@linkplain ClientEntity}.
  */
 @AllArgsConstructor
 @SuperBuilder
@@ -18,9 +18,9 @@ import java.time.LocalDateTime;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @Entity
-public class CardRequest extends BaseEntity {
+public class CardRequestEntity extends BaseEntity {
 
-    public CardRequest() {
+    public CardRequestEntity() {
         this.status = Status.NEW;
     }
 
@@ -32,5 +32,5 @@ public class CardRequest extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    private ClientEntity client;
 }

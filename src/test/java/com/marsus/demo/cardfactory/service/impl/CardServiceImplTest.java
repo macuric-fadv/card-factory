@@ -1,12 +1,11 @@
 package com.marsus.demo.cardfactory.service.impl;
 
 import com.marsus.demo.cardfactory.exception.NotFoundException;
-import com.marsus.demo.cardfactory.model.Status;
-import com.marsus.demo.cardfactory.model.dto.*;
-import com.marsus.demo.cardfactory.model.entity.CardRequest;
-import com.marsus.demo.cardfactory.model.entity.Client;
-import com.marsus.demo.cardfactory.repository.CardRequestRepository;
-import com.marsus.demo.cardfactory.repository.ClientRepository;
+import com.marsus.demo.cardfactory.model.*;
+import com.marsus.demo.cardfactory.dao.entity.CardRequestEntity;
+import com.marsus.demo.cardfactory.dao.entity.ClientEntity;
+import com.marsus.demo.cardfactory.dao.repository.CardRequestRepository;
+import com.marsus.demo.cardfactory.dao.repository.ClientRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,52 +36,48 @@ public class CardServiceImplTest {
     public void testCreateCardRequest_newClient() {
 
         doAnswer(invocation -> {
-            Client client = invocation.getArgument(0);
+            ClientEntity client = invocation.getArgument(0);
             Long id = 1L;
             client.setId(id);
             int last = client.getCardRequests().size() - 1;
-            CardRequest cardRequest = client.getCardRequests().get(last);
+            CardRequestEntity cardRequest = client.getCardRequests().get(last);
             cardRequest.setId(2L);
             return client;
-        }).when(clientRepository).save(any(Client.class));
+        }).when(clientRepository).save(any(ClientEntity.class));
 
-        ClientDto client = ClientDto.builder()
+        NewCardRequest newCardRequest = NewCardRequest.builder()
                 .firstName("Jure")
                 .lastName("Radić")
                 .oib("14131362243")
                 .build();
-        NewCardRequestDto newCardRequest = NewCardRequestDto.builder()
-                .client(client)
-                .build();
 
-        ClientInfoDto clientInfo = cardService.createCardRequest(newCardRequest);
+        ClientInfo clientInfo = cardService.createCardRequest(newCardRequest);
         assertNotNull(clientInfo);
-        assertNotNull(clientInfo.getClient());
-        assertNotNull(clientInfo.getClient().getId());
-        assertEquals(client.getFirstName(), clientInfo.getClient().getFirstName());
-        assertEquals(client.getLastName(), clientInfo.getClient().getLastName());
-        assertEquals(client.getOib(), clientInfo.getClient().getOib());
+        assertNotNull(clientInfo.getClientId());
+        assertEquals(newCardRequest.getFirstName(), clientInfo.getFirstName());
+        assertEquals(newCardRequest.getLastName(), clientInfo.getLastName());
+        assertEquals(newCardRequest.getOib(), clientInfo.getOib());
         assertNotNull(clientInfo.getRequests());
         assertEquals(1, clientInfo.getRequests().size());
-        RequestDto requestDto = clientInfo.getRequests().get(0);
-        assertNotNull(requestDto);
-        assertNotNull(requestDto.getId());
-        assertEquals(Status.NEW, requestDto.getStatus());
+        CardRequest request = clientInfo.getRequests().get(0);
+        assertNotNull(request);
+        assertNotNull(request.getRequestId());
+        assertEquals(Status.NEW, request.getStatus());
     }
 
     @Test
     public void testCreateCardRequest_existingClient_no_requests() {
 
         doAnswer(invocation -> {
-            Client client = invocation.getArgument(0);
+            ClientEntity client = invocation.getArgument(0);
             int last = client.getCardRequests().size() - 1;
-            CardRequest cardRequest = client.getCardRequests().get(last);
+            CardRequestEntity cardRequest = client.getCardRequests().get(last);
             cardRequest.setId(2L);
             return client;
-        }).when(clientRepository).save(any(Client.class));
+        }).when(clientRepository).save(any(ClientEntity.class));
 
 
-        Client client = Client.builder()
+        ClientEntity client = ClientEntity.builder()
                 .id(1L)
                 .firstName("Jure")
                 .lastName("Radić")
@@ -90,49 +85,45 @@ public class CardServiceImplTest {
                 .build();
         when(clientRepository.findByOib(anyString())).thenReturn(Optional.of(client));
 
-        ClientDto clientDto = ClientDto.builder()
+        NewCardRequest newCardRequestDto = NewCardRequest.builder()
                 .firstName(client.getFirstName())
                 .lastName(client.getLastName())
                 .oib(client.getOib())
                 .build();
-        NewCardRequestDto newCardRequestDto = NewCardRequestDto.builder()
-                .client(clientDto)
-                .build();
-        ClientInfoDto clientInfo = cardService.createCardRequest(newCardRequestDto);
+        ClientInfo clientInfo = cardService.createCardRequest(newCardRequestDto);
         assertNotNull(clientInfo);
-        assertNotNull(clientInfo.getClient());
-        assertNotNull(clientInfo.getClient().getId());
-        assertEquals(client.getFirstName(), clientInfo.getClient().getFirstName());
-        assertEquals(client.getLastName(), clientInfo.getClient().getLastName());
-        assertEquals(client.getOib(), clientInfo.getClient().getOib());
+        assertNotNull(clientInfo.getClientId());
+        assertEquals(client.getFirstName(), clientInfo.getFirstName());
+        assertEquals(client.getLastName(), clientInfo.getLastName());
+        assertEquals(client.getOib(), clientInfo.getOib());
         assertNotNull(clientInfo.getRequests());
         assertEquals(1, clientInfo.getRequests().size());
-        RequestDto requestDto = clientInfo.getRequests().get(0);
-        assertNotNull(requestDto);
-        assertNotNull(requestDto.getId());
-        assertEquals(Status.NEW, requestDto.getStatus());
+        CardRequest request = clientInfo.getRequests().get(0);
+        assertNotNull(request);
+        assertNotNull(request.getRequestId());
+        assertEquals(Status.NEW, request.getStatus());
     }
 
     @Test
     public void testCreateCardRequest_existingClient_existing_requests() {
 
         doAnswer(invocation -> {
-            Client client = invocation.getArgument(0);
+            ClientEntity client = invocation.getArgument(0);
             int last = client.getCardRequests().size() - 1;
-            CardRequest cardRequest = client.getCardRequests().get(last);
+            CardRequestEntity cardRequest = client.getCardRequests().get(last);
             cardRequest.setId(last + 1L);
             return client;
-        }).when(clientRepository).save(any(Client.class));
+        }).when(clientRepository).save(any(ClientEntity.class));
 
 
-        CardRequest cardRequest = CardRequest.builder()
+        CardRequestEntity cardRequest = CardRequestEntity.builder()
                 .id(1L)
                 .status(Status.COMPLETED)
                 .completedDate(LocalDateTime.now().minusDays(20))
                 .build();
-        List<CardRequest> cardRequests = new ArrayList<>();
+        List<CardRequestEntity> cardRequests = new ArrayList<>();
         cardRequests.add(cardRequest);
-        Client client = Client.builder()
+        ClientEntity client = ClientEntity.builder()
                 .id(1L)
                 .firstName("Jure")
                 .lastName("Radić")
@@ -142,27 +133,23 @@ public class CardServiceImplTest {
         cardRequest.setClient(client);
         when(clientRepository.findByOib(anyString())).thenReturn(Optional.of(client));
 
-        ClientDto clientDto = ClientDto.builder()
+        NewCardRequest newCardRequestDto = NewCardRequest.builder()
                 .firstName(client.getFirstName())
                 .lastName(client.getLastName())
                 .oib(client.getOib())
                 .build();
-        NewCardRequestDto newCardRequestDto = NewCardRequestDto.builder()
-                .client(clientDto)
-                .build();
-        ClientInfoDto clientInfo = cardService.createCardRequest(newCardRequestDto);
+        ClientInfo clientInfo = cardService.createCardRequest(newCardRequestDto);
         assertNotNull(clientInfo);
-        assertNotNull(clientInfo.getClient());
-        assertNotNull(clientInfo.getClient().getId());
-        assertEquals(client.getFirstName(), clientInfo.getClient().getFirstName());
-        assertEquals(client.getLastName(), clientInfo.getClient().getLastName());
-        assertEquals(client.getOib(), clientInfo.getClient().getOib());
+        assertNotNull(clientInfo.getClientId());
+        assertEquals(client.getFirstName(), clientInfo.getFirstName());
+        assertEquals(client.getLastName(), clientInfo.getLastName());
+        assertEquals(client.getOib(), clientInfo.getOib());
         assertNotNull(clientInfo.getRequests());
         assertEquals(2, clientInfo.getRequests().size());
-        RequestDto requestDto = clientInfo.getRequests().get(1);
-        assertNotNull(requestDto);
-        assertNotNull(requestDto.getId());
-        assertEquals(Status.NEW, requestDto.getStatus());
+        CardRequest request = clientInfo.getRequests().get(1);
+        assertNotNull(request);
+        assertNotNull(request.getRequestId());
+        assertEquals(Status.NEW, request.getStatus());
     }
 
     @Test
@@ -174,20 +161,20 @@ public class CardServiceImplTest {
     @Test
     public void testCreateCardRequest_nullClient() {
 
-        NewCardRequestDto newCardRequestDto = new NewCardRequestDto(null);
+        NewCardRequest newCardRequestDto = new NewCardRequest();
         assertThrows(IllegalArgumentException.class, () -> cardService.createCardRequest(newCardRequestDto));
     }
 
     @Test
     public void testUpdateCardRequest() throws NotFoundException {
 
-        CardRequest cardRequest = CardRequest.builder()
+        CardRequestEntity cardRequest = CardRequestEntity.builder()
                 .id(1L)
                 .status(Status.APPROVED)
                 .build();
-        List<CardRequest> cardRequests = new ArrayList<>();
+        List<CardRequestEntity> cardRequests = new ArrayList<>();
         cardRequests.add(cardRequest);
-        Client client = Client.builder()
+        ClientEntity client = ClientEntity.builder()
                 .id(1L)
                 .firstName("Jure")
                 .lastName("Radić")
@@ -197,24 +184,23 @@ public class CardServiceImplTest {
         cardRequest.setClient(client);
         when(clientRepository.findById(anyLong())).thenReturn(Optional.of(client));
 
-        RequestDto requestDto = RequestDto.builder()
-                .id(1L)
+        CardRequest request = CardRequest.builder()
+                .requestId(1L)
                 .status(Status.PENDING)
                 .build();
-        CardRequestDto cardRequestDto = CardRequestDto.builder()
+        UpdateCardRequest cardRequestDto = UpdateCardRequest.builder()
                 .clientId(1L)
-                .request(requestDto)
+                .request(request)
                 .build();
-        ClientInfoDto clientInfo = cardService.updateCardRequest(cardRequestDto);
+        ClientInfo clientInfo = cardService.updateCardRequest(cardRequestDto);
         assertNotNull(clientInfo);
-        assertNotNull(clientInfo.getClient());
-        assertEquals(cardRequestDto.getClientId(), clientInfo.getClient().getId());
+        assertEquals(cardRequestDto.getClientId(), clientInfo.getClientId());
         assertNotNull(clientInfo.getRequests());
         assertEquals(1, clientInfo.getRequests().size());
-        RequestDto request = clientInfo.getRequests().get(0);
-        assertNotNull(request);
-        assertEquals(requestDto.getId(), request.getId());
-        assertEquals(requestDto.getStatus(), request.getStatus());
+        CardRequest req = clientInfo.getRequests().get(0);
+        assertNotNull(req);
+        assertEquals(request.getRequestId(), req.getRequestId());
+        assertEquals(request.getStatus(), req.getStatus());
     }
 
     @Test
@@ -226,35 +212,35 @@ public class CardServiceImplTest {
     @Test
     public void testUpdateCardRequest_clientIdNull() {
 
-        CardRequestDto cardRequestDto = new CardRequestDto(null, null);
+        UpdateCardRequest cardRequestDto = new UpdateCardRequest(null, null);
         assertThrows(IllegalArgumentException.class, () -> cardService.updateCardRequest(null));
     }
 
     @Test
     public void testUpdateCardRequest_requestNull() {
 
-        CardRequestDto cardRequestDto = new CardRequestDto(1L, null);
+        UpdateCardRequest cardRequestDto = new UpdateCardRequest(1L, null);
         assertThrows(IllegalArgumentException.class, () -> cardService.updateCardRequest(null));
     }
 
     @Test
     public void testUpdateCardRequest_requestIdNull() {
 
-        RequestDto requestDto = new RequestDto(null, null);
-        CardRequestDto cardRequestDto = new CardRequestDto(1L, requestDto);
+        CardRequest request = new CardRequest(null, null);
+        UpdateCardRequest cardRequestDto = new UpdateCardRequest(1L, request);
         assertThrows(IllegalArgumentException.class, () -> cardService.updateCardRequest(null));
     }
 
     @Test
     public void testUpdateCardRequest_clientNotFound() {
 
-        RequestDto requestDto = RequestDto.builder()
-                .id(1L)
+        CardRequest request = CardRequest.builder()
+                .requestId(1L)
                 .status(Status.PENDING)
                 .build();
-        CardRequestDto cardRequestDto = CardRequestDto.builder()
+        UpdateCardRequest cardRequestDto = UpdateCardRequest.builder()
                 .clientId(1L)
-                .request(requestDto)
+                .request(request)
                 .build();
         assertThrows(NotFoundException.class, () -> cardService.updateCardRequest(cardRequestDto));
 
@@ -263,7 +249,7 @@ public class CardServiceImplTest {
     @Test
     public void testUpdateCardRequest_requestNotFound() {
 
-        Client client = Client.builder()
+        ClientEntity client = ClientEntity.builder()
                 .id(1L)
                 .firstName("Jure")
                 .lastName("Radić")
@@ -271,11 +257,11 @@ public class CardServiceImplTest {
                 .build();
         when(clientRepository.findById(anyLong())).thenReturn(Optional.of(client));
 
-        RequestDto requestDto = RequestDto.builder()
-                .id(1L)
+        CardRequest requestDto = CardRequest.builder()
+                .requestId(1L)
                 .status(Status.PENDING)
                 .build();
-        CardRequestDto cardRequestDto = CardRequestDto.builder()
+        UpdateCardRequest cardRequestDto = UpdateCardRequest.builder()
                 .clientId(1L)
                 .request(requestDto)
                 .build();
@@ -286,13 +272,13 @@ public class CardServiceImplTest {
     public void testGetClientInfo() throws NotFoundException {
 
         final String oib = "14131362243";
-        CardRequest cardRequest = CardRequest.builder()
+        CardRequestEntity cardRequest = CardRequestEntity.builder()
                 .id(1L)
                 .status(Status.APPROVED)
                 .build();
-        List<CardRequest> cardRequests = new ArrayList<>();
+        List<CardRequestEntity> cardRequests = new ArrayList<>();
         cardRequests.add(cardRequest);
-        Client client = Client.builder()
+        ClientEntity client = ClientEntity.builder()
                 .id(1L)
                 .firstName("Jure")
                 .lastName("Radić")
@@ -302,18 +288,17 @@ public class CardServiceImplTest {
         cardRequest.setClient(client);
         when(clientRepository.findByOib(anyString())).thenReturn(Optional.of(client));
 
-        ClientInfoDto clientInfo = cardService.getClientInfo(oib);
+        ClientInfo clientInfo = cardService.getClientInfo(oib);
         assertNotNull(clientInfo);
-        assertNotNull(clientInfo.getClient());
-        assertEquals(client.getId(), clientInfo.getClient().getId());
-        assertEquals(client.getFirstName(), clientInfo.getClient().getFirstName());
-        assertEquals(client.getLastName(), clientInfo.getClient().getLastName());
-        assertEquals(oib, clientInfo.getClient().getOib());
+        assertEquals(client.getId(), clientInfo.getClientId());
+        assertEquals(client.getFirstName(), clientInfo.getFirstName());
+        assertEquals(client.getLastName(), clientInfo.getLastName());
+        assertEquals(oib, clientInfo.getOib());
         assertNotNull(clientInfo.getRequests());
         assertEquals(1, clientInfo.getRequests().size());
-        RequestDto request = clientInfo.getRequests().get(0);
+        CardRequest request = clientInfo.getRequests().get(0);
         assertNotNull(request);
-        assertEquals(cardRequest.getId(), request.getId());
+        assertEquals(cardRequest.getId(), request.getRequestId());
         assertEquals(cardRequest.getStatus(), request.getStatus());
     }
 
@@ -333,13 +318,13 @@ public class CardServiceImplTest {
     public void testDeleteClient() throws NotFoundException {
 
         final String oib = "14131362243";
-        CardRequest cardRequest = CardRequest.builder()
+        CardRequestEntity cardRequest = CardRequestEntity.builder()
                 .id(1L)
                 .status(Status.APPROVED)
                 .build();
-        List<CardRequest> cardRequests = new ArrayList<>();
+        List<CardRequestEntity> cardRequests = new ArrayList<>();
         cardRequests.add(cardRequest);
-        Client client = Client.builder()
+        ClientEntity client = ClientEntity.builder()
                 .id(1L)
                 .firstName("Jure")
                 .lastName("Radić")

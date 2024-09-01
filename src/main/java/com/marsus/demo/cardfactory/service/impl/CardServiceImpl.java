@@ -1,14 +1,14 @@
 package com.marsus.demo.cardfactory.service.impl;
 
 import com.marsus.demo.cardfactory.exception.NotFoundException;
-import com.marsus.demo.cardfactory.model.dto.CardRequestDto;
-import com.marsus.demo.cardfactory.model.dto.ClientInfoDto;
-import com.marsus.demo.cardfactory.model.dto.NewCardRequestDto;
-import com.marsus.demo.cardfactory.model.entity.CardRequest;
-import com.marsus.demo.cardfactory.model.entity.Client;
+import com.marsus.demo.cardfactory.model.UpdateCardRequest;
+import com.marsus.demo.cardfactory.model.ClientInfo;
+import com.marsus.demo.cardfactory.model.NewCardRequest;
+import com.marsus.demo.cardfactory.dao.entity.CardRequestEntity;
+import com.marsus.demo.cardfactory.dao.entity.ClientEntity;
 import com.marsus.demo.cardfactory.model.Status;
-import com.marsus.demo.cardfactory.repository.CardRequestRepository;
-import com.marsus.demo.cardfactory.repository.ClientRepository;
+import com.marsus.demo.cardfactory.dao.repository.CardRequestRepository;
+import com.marsus.demo.cardfactory.dao.repository.ClientRepository;
 import com.marsus.demo.cardfactory.service.CardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +18,9 @@ import java.util.Optional;
 
 import static com.marsus.demo.cardfactory.model.mapper.ClientMapper.*;
 
+/**
+ * {@inheritDoc}
+ */
 @Service
 public class CardServiceImpl implements CardService {
 
@@ -32,68 +35,77 @@ public class CardServiceImpl implements CardService {
         this.cardRequestRepository = cardRequestRepository;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ClientInfoDto createCardRequest(final NewCardRequestDto newCardRequest) {
+    public ClientInfo createCardRequest(final NewCardRequest newCardRequest) {
 
-        if (newCardRequest == null || newCardRequest.getClient() == null) {
+        if (newCardRequest == null) {
             throw new IllegalArgumentException("New card request client data not provided");
         }
 
-        log.info("createCardRequest: creating new card request, client OIB: {}", newCardRequest.getClient().getOib());
-        Optional<Client> clientOptional = clientRepository.findByOib(newCardRequest.getClient().getOib());
-        Client client = clientOptional.orElse(mapToClient(newCardRequest));
-        CardRequest cardRequest = CardRequest.builder()
+        log.info("createCardRequest: creating new card request, client OIB: {}", newCardRequest.getOib());
+        Optional<ClientEntity> clientOptional = clientRepository.findByOib(newCardRequest.getOib());
+        ClientEntity client = clientOptional.orElse(mapToClientEntity(newCardRequest));
+        CardRequestEntity cardRequest = CardRequestEntity.builder()
                 .status(Status.NEW)
                 .client(client)
                 .build();
         client.addCardRequest(cardRequest);
         clientRepository.save(client);
         log.info("createCardRequest: new card request created, client OIB: {}", client.getOib());
-        return mapToClientInfoDto(client);
+        return mapToClientInfo(client);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ClientInfoDto updateCardRequest(final CardRequestDto cardRequestDto) throws NotFoundException {
+    public ClientInfo updateCardRequest(final UpdateCardRequest updateCardRequest) throws NotFoundException {
 
-        if (cardRequestDto == null) {
+        if (updateCardRequest == null) {
             throw new IllegalArgumentException("Card request not provided");
         }
-        if (cardRequestDto.getClientId() == null) {
+        if (updateCardRequest.getClientId() == null) {
             throw new IllegalArgumentException("Card request client ID not provided");
         }
-        if (cardRequestDto.getRequest() == null || cardRequestDto.getRequest().getId() == null) {
+        if (updateCardRequest.getRequest() == null || updateCardRequest.getRequest().getRequestId() == null) {
             throw new IllegalArgumentException("Card request ID not provided");
         }
 
         log.info("updateCardRequest: updating card request for client, client ID: {}, request ID: {}",
-                cardRequestDto.getClientId(), cardRequestDto.getRequest().getId());
+                updateCardRequest.getClientId(), updateCardRequest.getRequest().getRequestId());
 
-        Optional<Client> clientOptional = clientRepository.findById(cardRequestDto.getClientId());
+        Optional<ClientEntity> clientOptional = clientRepository.findById(updateCardRequest.getClientId());
         if (clientOptional.isEmpty()) {
-            throw new NotFoundException("Client not found for ID " + cardRequestDto.getClientId());
+            throw new NotFoundException("Client not found for ID " + updateCardRequest.getClientId());
         }
-        Client client = clientOptional.get();
+        ClientEntity client = clientOptional.get();
         log.debug("updateCardRequest: client found for ID: {}", client.getId());
 
-        Optional<CardRequest> requestOptional = client.getCardRequests().stream()
-                .filter(cardRequest -> cardRequest.getId().equals(cardRequestDto.getRequest().getId())).findAny();
+        Optional<CardRequestEntity> requestOptional = client.getCardRequests().stream()
+                .filter(cardRequest -> cardRequest.getId().equals(updateCardRequest.getRequest().getRequestId())).findAny();
         if (requestOptional.isEmpty()) {
-            throw new NotFoundException("Client request not found for ID " + cardRequestDto.getRequest().getId());
+            throw new NotFoundException("Client request not found for ID " + updateCardRequest.getRequest().getRequestId());
         }
-        CardRequest cardRequest = requestOptional.get();
-        log.debug("updateCardRequest: card request found for ID: {}", cardRequestDto.getRequest().getId());
+        CardRequestEntity cardRequest = requestOptional.get();
+        log.debug("updateCardRequest: card request found for ID: {}", updateCardRequest.getRequest().getRequestId());
 
-        cardRequest.setStatus(cardRequestDto.getRequest().getStatus());
+        cardRequest.setStatus(updateCardRequest.getRequest().getStatus());
         cardRequestRepository.save(cardRequest);
 
         log.info("updateCardRequest: card request updated, client ID: {}, request ID: {}",
                 client.getId(), cardRequest.getId());
 
-        return mapToClientInfoDto(client);
+        return mapToClientInfo(client);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ClientInfoDto getClientInfo(final String oib) throws NotFoundException {
+    public ClientInfo getClientInfo(final String oib) throws NotFoundException {
 
         if (oib == null) {
             throw new IllegalArgumentException("OIB not provided");
@@ -101,16 +113,19 @@ public class CardServiceImpl implements CardService {
 
         log.info("getClientInfo: retrieving client by OIB: {}", oib);
 
-        Optional<Client> clientOptional = clientRepository.findByOib(oib);
+        Optional<ClientEntity> clientOptional = clientRepository.findByOib(oib);
         if (clientOptional.isEmpty()) {
             throw new NotFoundException("Client not found by OIB: " + oib);
         }
 
-        Client client = clientOptional.get();
+        ClientEntity client = clientOptional.get();
         log.info("getClientInfo: client found for OIB: {}, client ID: {}", client.getOib(), client.getId());
-        return mapToClientInfoDto(client);
+        return mapToClientInfo(client);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void deleteClient(final String oib) throws NotFoundException {
 
@@ -120,7 +135,7 @@ public class CardServiceImpl implements CardService {
 
         log.info("deleteClient: deleting client for OIB: {}", oib);
 
-        Optional<Client> clientOptional = clientRepository.findByOib(oib);
+        Optional<ClientEntity> clientOptional = clientRepository.findByOib(oib);
         if (clientOptional.isEmpty()) {
             throw new NotFoundException("Client not found for OIB " + oib);
         }

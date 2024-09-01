@@ -1,46 +1,57 @@
 package com.marsus.demo.cardfactory.model.mapper;
 
-import com.marsus.demo.cardfactory.model.dto.ClientDto;
-import com.marsus.demo.cardfactory.model.dto.ClientInfoDto;
-import com.marsus.demo.cardfactory.model.dto.NewCardRequestDto;
-import com.marsus.demo.cardfactory.model.dto.RequestDto;
-import com.marsus.demo.cardfactory.model.entity.Client;
+import com.marsus.demo.cardfactory.model.CardRequest;
+import com.marsus.demo.cardfactory.model.ClientInfo;
+import com.marsus.demo.cardfactory.model.NewCardRequest;
+import com.marsus.demo.cardfactory.dao.entity.ClientEntity;
 
 import java.util.List;
 
+/**
+ * A client data mapper class handling transitions from one form of client model class to another.
+ */
 public class ClientMapper {
 
-    public static Client mapToClient(final NewCardRequestDto newCardRequest) {
+    /**
+     * Map given {@linkplain NewCardRequest} to {@linkplain ClientEntity}.
+     *
+     * @param newCardRequest {@linkplain NewCardRequest} to map
+     * @return {@linkplain ClientEntity} object mapped from the given {@linkplain NewCardRequest}
+     */
+    public static ClientEntity mapToClientEntity(final NewCardRequest newCardRequest) {
 
-        if (newCardRequest == null || newCardRequest.getClient() == null) {
+        if (newCardRequest == null) {
             return null;
         }
-        return Client.builder()
-                .firstName(newCardRequest.getClient().getFirstName())
-                .lastName(newCardRequest.getClient().getLastName())
-                .oib(newCardRequest.getClient().getOib())
+        return ClientEntity.builder()
+                .id(newCardRequest.getClientId())
+                .firstName(newCardRequest.getFirstName())
+                .lastName(newCardRequest.getLastName())
+                .oib(newCardRequest.getOib())
                 .build();
     }
 
-    public static ClientInfoDto mapToClientInfoDto(final Client client) {
+    /**
+     * Map given {@linkplain ClientEntity} to {@linkplain ClientInfo}.
+     *
+     * @param clientEntity {@linkplain ClientEntity} to map
+     * @return {@linkplain ClientInfo} object mapped from the given {@linkplain ClientEntity}
+     */
+    public static ClientInfo mapToClientInfo(final ClientEntity clientEntity) {
 
-        if (client == null) {
+        if (clientEntity == null) {
             return null;
         }
 
-        ClientDto clientDto = ClientDto.builder()
-                .id(client.getId())
-                .firstName(client.getFirstName())
-                .lastName(client.getLastName())
-                .oib(client.getOib())
-                .build();
-        List<RequestDto> requestDtoList = client.getCardRequests().stream()
-                .map(CardRequestMapper::mapToRequestDto)
+        List<CardRequest> requests = clientEntity.getCardRequests().stream()
+                .map(CardRequestMapper::mapToCardRequest)
                 .toList();
-
-        return ClientInfoDto.builder()
-                .client(clientDto)
-                .requests(requestDtoList)
+        return ClientInfo.builder()
+                .clientId(clientEntity.getId())
+                .firstName(clientEntity.getFirstName())
+                .lastName(clientEntity.getLastName())
+                .oib(clientEntity.getOib())
+                .requests(requests)
                 .build();
     }
 }
