@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 @Entity
+@Table(name = "CARD_REQUEST")
 public class CardRequestEntity extends BaseEntity {
 
     public CardRequestEntity() {
