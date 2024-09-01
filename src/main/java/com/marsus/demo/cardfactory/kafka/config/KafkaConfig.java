@@ -17,6 +17,9 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Kafka configuration class
+ */
 @Configuration
 @EnableKafka
 public class KafkaConfig {

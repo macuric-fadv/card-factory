@@ -7,6 +7,7 @@ import com.marsus.demo.cardfactory.rest.model.UpdateCardRequest;
 import com.marsus.demo.cardfactory.service.CardService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,10 @@ import static com.marsus.demo.cardfactory.model.mapper.CardRequestMapper.*;
 /**
  * REST API controller that handles card operations.
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/card-request")
 public class CardController {
-
-    private final Logger log = LoggerFactory.getLogger(CardController.class);
 
     private final CardService cardService;
 

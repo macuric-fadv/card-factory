@@ -1,6 +1,7 @@
 package com.marsus.demo.cardfactory.exception;
 
 import com.marsus.demo.cardfactory.rest.model.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +14,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  * Application exception handler, maps incoming exception - thrown by application and returns appropriate
  * error response.
  */
+@Slf4j
 @ControllerAdvice
 public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     protected ResponseEntity<Object> handleException(IllegalArgumentException ex, WebRequest request) {
+
+        log.error("handleException: IllegalArgumentException exception occurred", ex);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(String.valueOf(HttpStatus.BAD_REQUEST.value()))
@@ -29,6 +33,8 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(NotFoundException.class)
     protected ResponseEntity<Object> handleException(NotFoundException ex, WebRequest request) {
 
+        log.error("handleException: NotFoundException exception occurred", ex);
+
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(String.valueOf(HttpStatus.NOT_FOUND.value()))
                 .description(ex.getMessage())
@@ -38,6 +44,8 @@ public class ExceptionResponseHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleExceptionGeneral(Exception ex, WebRequest request) {
+
+        log.error("handleException: exception occurred", ex);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()))

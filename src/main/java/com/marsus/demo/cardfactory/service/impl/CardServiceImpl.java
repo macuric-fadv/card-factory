@@ -10,6 +10,7 @@ import com.marsus.demo.cardfactory.model.Status;
 import com.marsus.demo.cardfactory.dao.repository.CardRequestRepository;
 import com.marsus.demo.cardfactory.dao.repository.ClientRepository;
 import com.marsus.demo.cardfactory.service.CardService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,9 @@ import static com.marsus.demo.cardfactory.model.mapper.ClientMapper.*;
 /**
  * {@inheritDoc}
  */
+@Slf4j
 @Service
 public class CardServiceImpl implements CardService {
-
-    private final Logger log = LoggerFactory.getLogger(CardServiceImpl.class);
 
     private final ClientRepository clientRepository;
 

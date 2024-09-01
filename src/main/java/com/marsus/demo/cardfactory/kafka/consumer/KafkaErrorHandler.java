@@ -8,6 +8,9 @@ import org.apache.kafka.common.errors.RecordDeserializationException;
 import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.MessageListenerContainer;
 
+/**
+ * Kafka error handler class.
+ */
 @Slf4j
 public class KafkaErrorHandler implements CommonErrorHandler {
 

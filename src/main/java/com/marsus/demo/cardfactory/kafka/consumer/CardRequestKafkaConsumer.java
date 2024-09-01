@@ -8,6 +8,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+/**
+ * A kafka consumer class for processing card request messages
+ */
 @Component
 @Slf4j
 public class CardRequestKafkaConsumer {
@@ -18,6 +21,14 @@ public class CardRequestKafkaConsumer {
         this.cardService = cardService;
     }
 
+    /**
+     * Process kafka event message. Expects message to represent {@linkplain UpdateCardRequest}.
+     * Updates card request status as given in the {@linkplain UpdateCardRequest} for the specified
+     * client ID and request ID.
+     *
+     * @param updateCardRequest {@link UpdateCardRequest}
+     * @throws NotFoundException If card request is not found for specified client ID and request ID
+     */
     @KafkaListener(topics = "card-request-events", groupId = "group-1",
             containerFactory = "cardRequestKafkaListenerContainerFactory")
     void processEvent(@Payload UpdateCardRequest updateCardRequest) throws NotFoundException {
