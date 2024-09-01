@@ -4,11 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
@@ -18,24 +13,34 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @SuperBuilder
-@EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public abstract class BaseEntity {
 
+    private static final String APP_USER = "cc_factory_app";
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @SequenceGenerator(name = "SEQ_ID_GENERATOR", initialValue = 1000, allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "SEQ_ID_GENERATOR")
     protected Long id;
 
-    @CreatedBy
     protected String createdBy;
 
-    @CreatedDate
     @Column(nullable = false, updatable = false)
     protected LocalDateTime createdDate;
 
-    @LastModifiedBy
     protected String lastModifiedBy;
 
-    @LastModifiedDate
     protected LocalDateTime lastModifiedDate;
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = LocalDateTime.now();
+        createdBy = APP_USER;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastModifiedDate = LocalDateTime.now();
+        lastModifiedBy = APP_USER;
+    }
 }
