@@ -21,7 +21,7 @@ import static com.marsus.demo.cardfactory.model.mapper.ClientMapper.*;
 @Service
 public class CardServiceImpl implements CardService {
 
-    final Logger log = LoggerFactory.getLogger(CardServiceImpl.class);
+    private final Logger log = LoggerFactory.getLogger(CardServiceImpl.class);
 
     private final ClientRepository clientRepository;
 
@@ -112,7 +112,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public void deleteClient(final String oib) {
+    public void deleteClient(final String oib) throws NotFoundException {
 
         if (oib == null) {
             throw new IllegalArgumentException("OIB not provided");
@@ -120,7 +120,12 @@ public class CardServiceImpl implements CardService {
 
         log.info("deleteClient: deleting client for OIB: {}", oib);
 
-        clientRepository.deleteByOib(oib);
+        Optional<Client> clientOptional = clientRepository.findByOib(oib);
+        if (clientOptional.isEmpty()) {
+            throw new NotFoundException("Client not found for OIB " + oib);
+        }
+
+        clientRepository.delete(clientOptional.get());
 
         log.info("deleteClient: client deleted for OIB: {}", oib);
     }

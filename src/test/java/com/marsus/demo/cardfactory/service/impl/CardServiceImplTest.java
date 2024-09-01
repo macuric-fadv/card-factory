@@ -330,7 +330,24 @@ public class CardServiceImplTest {
     }
 
     @Test
-    public void testDeleteClient() {
+    public void testDeleteClient() throws NotFoundException {
+
+        final String oib = "14131362243";
+        CardRequest cardRequest = CardRequest.builder()
+                .id(1L)
+                .status(Status.APPROVED)
+                .build();
+        List<CardRequest> cardRequests = new ArrayList<>();
+        cardRequests.add(cardRequest);
+        Client client = Client.builder()
+                .id(1L)
+                .firstName("Jure")
+                .lastName("Radić")
+                .oib(oib)
+                .cardRequests(cardRequests)
+                .build();
+        cardRequest.setClient(client);
+        when(clientRepository.findByOib(anyString())).thenReturn(Optional.of(client));
 
         cardService.deleteClient("14131362243");
     }
@@ -339,5 +356,11 @@ public class CardServiceImplTest {
     public void testDeleteClient_nullOib() {
 
         assertThrows(IllegalArgumentException.class, () -> cardService.deleteClient(null));
+    }
+
+    @Test
+    public void testDeleteClient_clientNotFound() {
+
+        assertThrows(NotFoundException.class, () -> cardService.deleteClient("14131362243"));
     }
 }

@@ -13,5 +13,5 @@ public interface CardService {
 
     ClientInfoDto getClientInfo(String oib) throws NotFoundException;
 
-    void deleteClient(String oib);
+    void deleteClient(String oib) throws NotFoundException;
 }

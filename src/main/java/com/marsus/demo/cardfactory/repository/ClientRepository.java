@@ -10,6 +10,4 @@ import java.util.Optional;
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
     Optional<Client> findByOib(String oib);
-
-    void deleteByOib(String oib);
 }

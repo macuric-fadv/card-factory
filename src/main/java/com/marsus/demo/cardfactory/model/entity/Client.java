@@ -1,7 +1,6 @@
 package com.marsus.demo.cardfactory.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -21,16 +20,13 @@ import java.util.List;
 @Table(name = "CLIENT", indexes = @Index(name = "idx_oib", columnList = "oib"))
 public class Client extends BaseEntity {
 
-    @Pattern(regexp = "^[a-zA-Z]{3,50}$")
     private String firstName;
 
-    @Pattern(regexp = "^[a-zA-Z]{3,50}$")
     private String lastName;
 
-    @Pattern(regexp = "^[0-9]{11}$")
     private String oib;
 
-    @OneToMany(mappedBy = "client")
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<CardRequest> cardRequests;
 
     public List<CardRequest> getCardRequests() {
