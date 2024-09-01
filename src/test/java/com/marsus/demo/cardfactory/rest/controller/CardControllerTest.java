@@ -116,12 +116,12 @@ public class CardControllerTest {
                         .content(new ObjectMapper().writeValueAsString(updateCardRequest))
                 ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.client.id").value(1L))
-                .andExpect(jsonPath("$.client.firstName").value("Mario"))
-                .andExpect(jsonPath("$.client.lastName").value("Šimić"))
-                .andExpect(jsonPath("$.client.oib").value("14131362243"))
+                .andExpect(jsonPath("$.clientId").value(1L))
+                .andExpect(jsonPath("$.firstName").value("Mario"))
+                .andExpect(jsonPath("$.lastName").value("Šimić"))
+                .andExpect(jsonPath("$.oib").value("14131362243"))
                 .andExpect(jsonPath("$.requests", hasSize(1)))
-                .andExpect(jsonPath("$.requests[0].id").value(1L))
+                .andExpect(jsonPath("$.requests[0].requestId").value(1L))
                 .andExpect(jsonPath("$.requests[0].status").value("PENDING"));
 
         verify(cardService, times(1)).updateCardRequest(ArgumentMatchers.any(UpdateCardRequest.class));
@@ -211,12 +211,12 @@ public class CardControllerTest {
                         .characterEncoding(StandardCharsets.UTF_8)
                 ).andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(jsonPath("$.client.id").value(1L))
-                .andExpect(jsonPath("$.client.firstName").value("Mario"))
-                .andExpect(jsonPath("$.client.lastName").value("Šimić"))
-                .andExpect(jsonPath("$.client.oib").value("14131362243"))
+                .andExpect(jsonPath("$.clientId").value(1L))
+                .andExpect(jsonPath("$.firstName").value("Mario"))
+                .andExpect(jsonPath("$.lastName").value("Šimić"))
+                .andExpect(jsonPath("$.oib").value("14131362243"))
                 .andExpect(jsonPath("$.requests", hasSize(1)))
-                .andExpect(jsonPath("$.requests[0].id").value(1L))
+                .andExpect(jsonPath("$.requests[0].requestId").value(1L))
                 .andExpect(jsonPath("$.requests[0].status").value("PENDING"));
 
         verify(cardService, times(1)).getClientInfo(ArgumentMatchers.anyString());

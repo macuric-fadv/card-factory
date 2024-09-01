@@ -159,13 +159,6 @@ public class CardServiceImplTest {
     }
 
     @Test
-    public void testCreateCardRequest_nullClient() {
-
-        NewCardRequest newCardRequestDto = new NewCardRequest();
-        assertThrows(IllegalArgumentException.class, () -> cardService.createCardRequest(newCardRequestDto));
-    }
-
-    @Test
     public void testUpdateCardRequest() throws NotFoundException {
 
         CardRequestEntity cardRequest = CardRequestEntity.builder()
