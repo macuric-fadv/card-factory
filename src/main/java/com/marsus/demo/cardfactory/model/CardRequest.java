@@ -1,17 +1,15 @@
 package com.marsus.demo.cardfactory.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 /**
  * A class representing card request data.
  */
+
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Getter
-@EqualsAndHashCode
 public class CardRequest {
 
     /** Card request ID */

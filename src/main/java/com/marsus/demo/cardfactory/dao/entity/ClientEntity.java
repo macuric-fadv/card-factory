@@ -11,11 +11,11 @@ import java.util.List;
  * A client entity, applying for a new credit card. Client is identified by its ID, has personal data
  * like first name, last name, and OIB. A client can have one or more {@linkplain CardRequestEntity}s.
  */
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @SuperBuilder
-@Getter
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "CLIENT", indexes = @Index(name = "idx_oib", columnList = "oib"))
 public class ClientEntity extends BaseEntity {

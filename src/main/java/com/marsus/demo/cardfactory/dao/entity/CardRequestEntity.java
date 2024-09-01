@@ -12,10 +12,9 @@ import java.time.LocalDateTime;
  * {@linkplain Status} denotes a stage the process of creating new credit card is at.
  * Credit card request belongs to a single {@linkplain ClientEntity}.
  */
+@Data
 @AllArgsConstructor
 @SuperBuilder
-@Getter
-@Setter
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "CARD_REQUEST")

@@ -7,11 +7,10 @@ import lombok.*;
 /**
  * A class representing request for a new card.
  */
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Getter
-@EqualsAndHashCode
 public class NewCardRequest {
 
     /** Client ID */
