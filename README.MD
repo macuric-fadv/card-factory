@@ -27,6 +27,9 @@ To rune the application in debug mode use this command:
 mvn spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8787"
 ```
 
+## H2 Database
+Application uses in-memory H2 database. Database console can be found at http://localhost:8080/h2-console. 
+
 ## REST API Endpoints
 
 Application exposes REST API endpoints for card request operations. Postman collection holding set of API requests can be found in the file card-factory.postman_collection.json in the project root directory.   
