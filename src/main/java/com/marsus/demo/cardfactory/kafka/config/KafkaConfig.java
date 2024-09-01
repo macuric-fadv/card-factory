@@ -1,7 +1,7 @@
 package com.marsus.demo.cardfactory.kafka.config;
 
 import com.marsus.demo.cardfactory.kafka.consumer.KafkaErrorHandler;
-import com.marsus.demo.cardfactory.model.CardRequest;
+import com.marsus.demo.cardfactory.model.UpdateCardRequest;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,14 +25,14 @@ public class KafkaConfig {
     private String bootstrapServers;
 
     @Bean
-    public ConsumerFactory<String, CardRequest> cardRequestConsumerFactory() {
+    public ConsumerFactory<String, UpdateCardRequest> cardRequestConsumerFactory() {
 
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "group-1");
         return new DefaultKafkaConsumerFactory<>(props,
                 new StringDeserializer(),
-                new JsonDeserializer<>(CardRequest.class));
+                new JsonDeserializer<>(UpdateCardRequest.class));
     }
 
     @Bean
@@ -41,8 +41,8 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, CardRequest> cardRequestKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, CardRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, UpdateCardRequest> cardRequestKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, UpdateCardRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(cardRequestConsumerFactory());
         factory.setCommonErrorHandler(commonErrorHandler());
         return factory;

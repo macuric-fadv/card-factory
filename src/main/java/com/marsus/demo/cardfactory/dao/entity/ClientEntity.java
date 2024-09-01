@@ -26,7 +26,7 @@ public class ClientEntity extends BaseEntity {
 
     private String oib;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<CardRequestEntity> cardRequests;
 
     public List<CardRequestEntity> getCardRequests() {

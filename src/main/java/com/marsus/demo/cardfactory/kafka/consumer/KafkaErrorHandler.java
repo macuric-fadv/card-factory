@@ -1,5 +1,6 @@
 package com.marsus.demo.cardfactory.kafka.consumer;
 
+import com.marsus.demo.cardfactory.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -28,7 +29,16 @@ public class KafkaErrorHandler implements CommonErrorHandler {
             consumer.commitSync();
             return true;
         }
+        if (exception instanceof IllegalArgumentException ex) {
+            log.error("Card request message is invalid", ex);
+            return true;
+        }
+        if (exception instanceof NotFoundException ex) {
+            log.error("Card request not found", ex);
+            return true;
+        }
         log.error("Kafka exception occurred", exception);
-        return false;
+        return true;
     }
+
 }
